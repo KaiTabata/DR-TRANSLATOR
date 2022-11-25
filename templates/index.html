@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> <!-- BlumaのCDN -->
+    <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet"> <!-- FontAwesomeのCDN-->
+    <title>DR-translator</title>
+  </head>
+  <body>
+    <section class="section">
+      <h1 class="title">DR-translator</h1>
+      <h2 class="subtitle">
+        Provides a file with commented translations for Docx files such as DR.
+      </h2>
+    </section>
+    <form class="form" action="/upload" method="post" enctype="multipart/form-data">
+      <div class="columns my-6">
+        <div class="column is-4 is-offset-4" id=uploadcolumn>
+          <div id="fileupload" class="file has-name is-primary">
+            <label class="file-label">
+              <input class="file-input" type="file" name="uploaded_file">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">
+                  Choose a file…
+                </span>
+              </span>
+              <span class="file-name">
+                No file uploaded
+              </span>
+            </label>
+          </div>
+          <div class="columns">
+            <div class="column my-4" >
+              <input class="button is-primary" type="submit" id="SubmitButton" name="SubmitButton" value="Submit">
+            </div>
+            <div class="column my-4" >
+              <div class="select is-primary">
+                <select>
+                  <option>EN → JA</option>
+                  <option>JA → EN</option>
+                </select>
+              </div>
+            </div>
+        </div>
+      </div>
+      </div>
+    </form>
+
+    <script>
+      const fileInput = document.querySelector('#fileupload input[type=file]');
+      fileInput.onchange = () => {
+        if (fileInput.files.length > 0) {
+          const fileName = document.querySelector('#fileupload .file-name');
+          fileName.textContent = fileInput.files[0].name;
+        }
+      }
+    </script>
+  </body>
+</html>
