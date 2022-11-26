@@ -16,12 +16,14 @@ def index():
     return render_template("index.html")
 
 
+
+@app.route('/upload', methods=['GET', 'POST'])
+
 #拡張子が有効かどうか確認する関数
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/upload', methods=['GET', 'POST'])
 #アップロードされたファイルのURLにリダイレクトする関数
 def upload_file():
     if request.method == 'POST':
