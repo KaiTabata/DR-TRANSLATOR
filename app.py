@@ -80,7 +80,7 @@ def translate_file(name):
             para=doc.paragraphs[i]
         except IndexError as e:
           print(e)
-          break #トライキャッチ：インデックスエラーの捕捉します。パラグラフが翻訳されていればコメントが追加。もし段落が空であればその段落をスキップ
+          break #トライキャッチ：インデックスエラーの捕捉。パラグラフが翻訳されていればコメントが追加。もし段落が空であればその段落をスキップ
 
         bfori_text=para.text
         bfori_text=bfori_text.replace("\r","")
