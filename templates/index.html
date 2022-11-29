@@ -14,7 +14,7 @@
         Provides a file with commented translations for Docx files such as DR.
       </h2>
     </section>
-    <form class="form" action="/upload" method="post" enctype="multipart/form-data">
+    <form class="form" action="/upload" method="POST" enctype="multipart/form-data">
       <div class="columns my-6">
         <div class="column is-4 is-offset-4" id=uploadcolumn>
           <div id="fileupload" class="file has-name is-primary">
@@ -35,8 +35,9 @@
           </div>
           <div class="columns">
             <div class="column my-4" >
-              <input class="button is-primary" type=submit" id="SubmitButton" name="SubmitButton" value="Submit">
+              <input class="button is-primary" type="submit" id="SubmitButton" name="SubmitButton" value="Submit">
             </div>
+            <!--
             <div class="column my-4" >
               <div class="select is-primary">
                 <select>
@@ -44,6 +45,7 @@
                   <option>JA → EN</option>
                 </select>
               </div>
+            -->
             </div>
         </div>
       </div>
