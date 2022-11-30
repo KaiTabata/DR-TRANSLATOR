@@ -20,10 +20,12 @@ import requests
 import json
 
 UPLOAD_FOLDER = './uploads'
-ALLOWED_EXTENSIONS = set(['docx', 'pdf', 'doc', 'gdoc'])
+TRANSLATED_FOLDER = './translated'
+ALLOWED_EXTENSIONS = set(['docx', 'doc'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TRANSLATED_FOLDER'] = TRANSLATED_FOLDER
 app.secret_key = 'user'
 app.permanent_session_lifetime = timedelta(minutes=5) # -> 5分 #(days=5) -> 5日保存
 
@@ -43,39 +45,53 @@ def index():
 
 #アップロードされたファイルのURLにリダイレクトする関数
 def upload_file():
+    #リクエストメソッドがPOSTの場合
     if request.method == 'POST':
-        print("POST requested!!")
+        print("POSTがリクエストされました")
 
         file = request.files.get('filename')
 
-        # post リクエストがファイル部分を持つかどうかをチェック
+        # POSTリクエストがファイル部分を持つかどうかをチェック
         if 'filename' not in request.files:
-            print('No file part')
-            return redirect(request.url)
+            print('POSTリクエストにファイルが含まれていません。')
+            flash("リクエストにファイルが含まれていません。")
 
-        # ユーザーがファイルを選択しない場合、ファイル名のない空のファイルを送信
+        # ユーザーがファイルを選択しない場合
         if file.filename == '':
-            print('No selected file')
-            return redirect(request.url)
+            print('ユーザーがファイルを選択していません。')
+            flash("ファイルが選択されていません。")
 
+        #ファイルがあり、かつ許可されたファイル形式である場合
         if file and allowed_file(file.filename):
             securename = secure_filename(file.filename)
             print(securename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], securename))
-            return redirect(url_for('translate_file', name=securename))
-    return render_template("upload.html")
+
+            #翻訳言語の選択
+            lang_option = request.form.get('lang', '')
+            if lang_option == "EN → JA":
+                dest_lang = "ja"
+            else:
+                dest_lang = 'en'
+            print(dest_lang)
+            return redirect(url_for('translate_file', name=securename, lang=dest_lang))
+        else:
+            print("ファイル形式がallowed_fileにありません")
+            flash("ファイル形式が異なります。")
+    return render_template("index.html")
 
 
-@app.route('/uploads/translated_<name>')
-def translate_file(name):
+@app.route('/uploads/<lang>/translated_<name>')
+def translate_file(name, lang):
+    dest_lang = lang
+    print(dest_lang)
     translator = Translator(service_urls=['translate.googleapis.com'])
-    dest_lang = "ja"
     doc = docx.Document("./uploads/"+name)
     pg= len(doc.paragraphs) #文書内の段落数を取得
     print("処理が始まりました")
 
     array=[]
-    for i in range(1, pg): #ループ：最初の段落であるタイトルを除いてドキュメントの各段落に実行　あとでtwdmかます
+    for i in range(1, pg): #ループ：最初の段落であるタイトルを除いてドキュメントの各段落に実行　あとでtqdmかます
         try:
             para=doc.paragraphs[i]
         except IndexError as e:
@@ -106,8 +122,8 @@ def translate_file(name):
     lastrun = lastpara.add_run(' ')
     lastrun.add_comment("Document_Revision: "+str(core_properties.revision)+"\n"+"このファイルはDR_translatorによって自動翻訳されています。訳文のコメントを削除したい場合は、校閲→コメント→ドキュメント内のすべてのコメントを削除を押下してください。",author='DR_translator',initials= 'KT')
     downloadfile = "translated_"+name
-    doc.save(os.path.join(app.config['UPLOAD_FOLDER'], downloadfile))
-    return send_from_directory(app.config["UPLOAD_FOLDER"], downloadfile)
+    doc.save(os.path.join(app.config['TRANSLATED_FOLDER'], downloadfile))
+    return send_from_directory(app.config["TRANSLATED_FOLDER"], downloadfile)
 
 if __name__ == '__main__':
     app.debug = True
