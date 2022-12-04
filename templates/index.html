@@ -5,18 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> <!-- BlumaのCDN -->
     <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet"> <!-- FontAwesomeのCDN-->
-    <title>DR-translator</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.svg') }}">
+    <title>DR-Translator</title>
+    <style media="screen">
+    .footer {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      }
+
+    </style>
   </head>
   <body>
     <section class="section">
-      <h1 class="title">DR-translator</h1>
+      <h1 class="title">DR-Translator</h1>
       <h2 class="subtitle">
-        Provides a file with commented translations for Docx files such as DR.
+        DRなどのWordファイルにコメントで訳文を挿入します。
       </h2>
     </section>
     <form class="form" action="/upload" method="POST" enctype="multipart/form-data">
-      <div class="columns my-6">
-        <div class="column is-4 is-offset-4" id=uploadcolumn>
+      <div class="columns my-6 is-centered">
+        <div class="column is-4 " id=uploadcolumn>
           <div id="fileupload" class="file has-name is-primary">
             <label class="file-label">
               <input class="file-input" type="file" name="filename">
@@ -35,9 +47,6 @@
           </div>
           <div class="columns">
             <div class="column my-4" >
-              <input class="button is-primary" type="submit" id="SubmitButton" name="SubmitButton" value="Submit">
-            </div>
-            <div class="column my-4" >
               <div class="select is-primary">
                 <select name="lang">
                   <option>EN → JA</option>
@@ -45,18 +54,57 @@
                 </select>
               </div>
             </div>
+            <div class="column my-4" >
+              <input class="button is-primary" type="submit" id="SubmitButton" name="SubmitButton" value="Submit">
+            </div>
         </div>
       </div>
       </div>
     </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="column is-three-fifths is-offset-one-fifth">
+            <article class="message is-danger ">
+              <div class="message-header">
+                <p>エラーが起きました</p>
+                <button class="delete" aria-label="delete"></button>
+              </div>
+              <div class="message-body">
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+              </div>
+            </article>
+          </div>
+        {% endif %}
+    {% endwith %}
 
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          <strong>DR_Translator</strong> by <a href="https://www.instagram.com/kai_01public/">Kai Tabata</a>. The source code is published on
+          <a href="https://github.com/KaiTabata/DR-TRANSLATOR">Github</a>. The website content
+          is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+        </p>
+      </div>
+    </footer>
     <script>
+    <!--ファイル名表示用-->
       const fileInput = document.querySelector('#fileupload input[type=file]');
       fileInput.onchange = () => {
         if (fileInput.files.length > 0) {
           const fileName = document.querySelector('#fileupload .file-name');
           fileName.textContent = fileInput.files[0].name;
         }
+      }
+    <!--メッセージ非表示用-->
+      for (const element of document.querySelectorAll('.message  .delete')) {
+          element.addEventListener('click', e => {
+              e.target.parentNode.parentNode.classList.add('is-hidden');
+          });
       }
     </script>
   </body>

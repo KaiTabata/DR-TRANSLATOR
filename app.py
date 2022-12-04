@@ -4,21 +4,22 @@ from werkzeug.utils import secure_filename #ファイル名保護用
 from datetime import timedelta #settion管理で時間情報を用いるため
 
 '''Docx'''
-import docx
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from docx.text.paragraph import Paragraph
+import docx  #Microsoft Word ファイルを扱うため'''
+from docx.oxml import OxmlElement #Open XML ファイル形式を扱うため'''
+from docx.oxml.ns import qn #XML 名前空間を扱うため'''
+from docx.text.paragraph import Paragraph #Microsoft Word の文章を表すクラス'''
 from docx.oxml.xmlchemy import OxmlElement
-from docx import Document
-from retry import retry
-from googletrans import Translator
-import array
-import os
-import sys
-import time
-import requests
-import json
+from docx import Document #Microsoft Word のドキュメントを表すクラス'''
+from retry import retry #パッケージは、再試行を行うためのモジュール'''
+from googletrans import Translator #Google 翻訳 API を使用して、テキストの翻訳を行うためのクラス'''
+import array #配列を扱うため'''
+import os #オペレーティングシステムへのアクセスを提供するモジュール'''
+import sys #Python インタプリターを扱うため'''
+import time #時刻を扱うため'''
+import requests #Web リクエストを行うため'''
+import json #JSON データを扱うため'''
 
+''''''
 UPLOAD_FOLDER = './uploads'
 TRANSLATED_FOLDER = './translated'
 ALLOWED_EXTENSIONS = set(['docx', 'doc'])
@@ -44,6 +45,12 @@ def index():
 @app.route('/upload', methods=['GET', 'POST'])
 
 #アップロードされたファイルのURLにリダイレクトする関数
+#流れ
+#「/upload」URLに対してPOSTリクエストが行われた場合に実行される関数を定義する。
+#POSTリクエストから「filename」という名前で送信されたファイルを取得する。
+#「filename」がPOSTリクエストの中に存在するかどうかをチェックし、存在しない場合は、「POSTリクエストにファイルが含まれていません。」というエラーメッセージを表示する。
+#「allowed_file」関数を使用して、アップロードされたファイルの拡張子が有効かどうかを確認する。
+
 def upload_file():
     #リクエストメソッドがPOSTの場合
     if request.method == 'POST':
@@ -53,13 +60,11 @@ def upload_file():
 
         # POSTリクエストがファイル部分を持つかどうかをチェック
         if 'filename' not in request.files:
-            print('POSTリクエストにファイルが含まれていません。')
-            flash("リクエストにファイルが含まれていません。")
+            flash("リクエストにファイルが含まれていません。一度タブを閉じてもう一度初めからやり直してください。")
 
         # ユーザーがファイルを選択しない場合
         if file.filename == '':
-            print('ユーザーがファイルを選択していません。')
-            flash("ファイルが選択されていません。")
+            flash("ファイルが選択されていません。Choose a fileのボタンを押してファイルを選択してください。")
 
         #ファイルがあり、かつ許可されたファイル形式である場合
         if file and allowed_file(file.filename):
@@ -76,8 +81,7 @@ def upload_file():
             print(dest_lang)
             return redirect(url_for('translate_file', name=securename, lang=dest_lang))
         else:
-            print("ファイル形式がallowed_fileにありません")
-            flash("ファイル形式が異なります。")
+            flash("ファイル形式が異なります。現在利用できるファイル形式は.docxまたは.docです。決議などをPDFでしか持っていない場合はODSからwordファイルを取得してください。")
     return render_template("index.html")
 
 
